@@ -4,7 +4,14 @@ const puppeteer = require('puppeteer');
 const express = require('express');
 
 const generatePreviewImages = async (dir, options = {}) => {
-    const pages = await fg('**/*.{html,htm}', {
+    const finalOptions = Object.assign(
+        {
+            globPattern: '**/*.{html.html}'
+        },
+        options
+    );
+
+    const pages = await fg(finalOptions.globPattern, {
         cwd: dir
     });
     const browser = await puppeteer.launch({
@@ -17,13 +24,15 @@ const generatePreviewImages = async (dir, options = {}) => {
     const server = app.listen(3000);
 
     for (const file of pages) {
+        console.log(file);
         const page = await browser.newPage();
         await page.setViewport({ width: 480, height: 360 });
         await page.goto(`http://localhost:3000/${file}`);
         const buffer = await page.screenshot({path: `images/${file.replace('/', '___')}.png`});
+        console.log(buffer);
     }
     server.close();
 }
 
-
-module.exports = generatePreviewImages;
+exports.default = generatePreviewImages;
+exports.generatePreviewImages = generatePreviewImages;
