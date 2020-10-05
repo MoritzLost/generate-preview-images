@@ -7,7 +7,7 @@ const express = require('express');
 const generatePreviewImages = async (dir, options = {}) => {
     const finalOptions = Object.assign(
         {
-            globPattern: '**/*.{html,html}',
+            globPattern: '**/*.{html,htm}',
             serverPort: 3000,
             viewport: { width: 480, height: 360 },
             screenshotOptions: {
