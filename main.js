@@ -4,6 +4,11 @@ const fg = require('fast-glob');
 const puppeteer = require('puppeteer');
 const express = require('express');
 
+const outputPathReplaceExtension = (baseDir, filePath, ext) => path.resolve(
+    baseDir,
+    `${filePath.replace(/\.[a-zA-Z0-9]+$/, `.${ext}`)}`
+);
+
 const generatePreviewImages = async (dir, options = {}) => {
     const finalOptions = Object.assign(
         {
@@ -18,10 +23,7 @@ const generatePreviewImages = async (dir, options = {}) => {
             pageWaitUntil: 'networkidle0',
             // ouputPath: (filePath, ext) => path.resolve(dir, `${filePath.replace('/', '___')}.${ext}`),
             // @TODO: export the default function from the module
-            outputPath: (baseDir, filePath, ext) => path.resolve(
-                baseDir,
-                `${filePath.replace(/\.[a-zA-Z]+$/, `.${ext}`)}`
-            ),
+            outputPath: outputPathReplaceExtension,
             removeOriginalFiles: false,
         },
         options
