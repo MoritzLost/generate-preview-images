@@ -1,12 +1,28 @@
 {
   "name": "generate-preview-images",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "Automatically take screenshots of static HTML pages to use as preview images for social media.",
+  "homepage": "https://github.com/MoritzLost/generate-preview-images",
+  "bugs": "https://github.com/MoritzLost/generate-preview-images/issues",
+  "license": "MIT",
+  "author": "MoritzLost <m@moritzlost.de>",
+  "files": [
+    "cli.js"
+  ],
   "main": "main.js",
-  "bin": {"generate-preview-images": "./cli.js"},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "bin": {
+    "generate-preview-images": "./cli.js"
   },
-  "author": "",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MoritzLost/generate-preview-images"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\""
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "fast-glob": "^3.2.4",
+    "puppeteer": "^5.3.1"
+  }
 }
