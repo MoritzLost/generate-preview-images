@@ -1,8 +1,14 @@
 #!/usr/bin/env node
 
-const { generatePreviewImages } = require('./main');
-const path = require('path');
+// NODE: CLI options not implemented yet
 
-generatePreviewImages(path.join(__dirname, '../dist'), {
-    globPattern: 'preview-images/**/*.{html,htm}'
-}).then(console.log);
+const { generatePreviewImages } = require('./main');
+
+generatePreviewImages(process.cwd(), {})
+    .then(() => {
+        process.exit(0);
+    })
+    .catch(e => {
+        console.error(e);
+        process.exit(1);
+    });

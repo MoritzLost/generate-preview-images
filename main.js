@@ -4,12 +4,33 @@ const fg = require('fast-glob');
 const puppeteer = require('puppeteer');
 const express = require('express');
 
+
 const outputPathReplaceExtension = (baseDir, filePath, ext) => path.resolve(
     baseDir,
     `${filePath.replace(/\.[a-zA-Z0-9]+$/, `.${ext}`)}`
 );
 
+/**
+ * Find all HTML (or other, see options) files in the specified directory and
+ * take screenshots of them. Files are found based on the passed glob pattern.
+ * The files are served by a static express server. Screenshots are taken with
+ * Puppeteer using a headless Chromium instance. Use the options below to
+ * configure how the screenshots are taken and stored.
+ *
+ * @param {String} dir      Base directory for the fast-glob pattern and the static express server.
+ * @param {Object} options  Additional configuration to override the defaults. See below for possible options.
+ * @param {String} options.globPattern                  Glob pattern used to find files to take screenshots of. Defaults to all .html/.html files in any subdirectory.
+ * @param {Number} options.serverPort                   Port to use for the static express server. Default = 3000.
+ * @param {Object} options.viewport                     Viewport options to pass to page.setViewport. Default is 1920x1080. @see https://pptr.dev/#?product=Puppeteer&version=v5.3.1&show=api-pagesetviewportviewport
+ * @param {Object} options.screenshotOptions            Options to pass to pass to page.screenshot or elementHandle.setScreenshot. Default is a regular PNG screenshot. @see https://pptr.dev/#?product=Puppeteer&version=v5.3.1&show=api-pagescreenshotoptions
+ * @param {String} options.screenshotElementSelector    You may take a screenshot of a specific node instead of the entire viewport by passing a selector for that element here. @see https://pptr.dev/#?product=Puppeteer&version=v5.3.1&show=api-pageselector
+ * @param {String} options.pageWaitUntil                How long to wait before taking the screenshot. Defaults to network idle for 500ms. @see https://pptr.dev/#?product=Puppeteer&version=v5.3.1&show=api-pagegotourl-options
+ * @param {Function} options.outputPath                 Callback that returns the output path for the screenshot. Defaults to replacing the existing extension with the appropriate image extension. Gets passed (1) path of the base directory (2) original filename relative to the base directory (3) extension of the generated screenshot. Return false to disable automatic file generation.
+ * @param {Boolean} options.removeOriginalFiles         Remove the found files after taking the screenhot. WARNING: Destructive, use with
+ * @returns {Promise} Promise resolving to array of objects describing the found files and generated screenshots.
+ */
 const generatePreviewImages = async (dir, options = {}) => {
+    // merge options with defaults
     const finalOptions = Object.assign(
         {
             globPattern: '**/*.{html,htm}',
@@ -21,8 +42,6 @@ const generatePreviewImages = async (dir, options = {}) => {
             },
             screenshotElementSelector: false,
             pageWaitUntil: 'networkidle0',
-            // ouputPath: (filePath, ext) => path.resolve(dir, `${filePath.replace('/', '___')}.${ext}`),
-            // @TODO: export the default function from the module
             outputPath: outputPathReplaceExtension,
             removeOriginalFiles: false,
         },
@@ -34,7 +53,7 @@ const generatePreviewImages = async (dir, options = {}) => {
         cwd: dir
     });
 
-    // start a server to serve the both the HTML files as well as any static files such as CSS
+    // start a server to serve both the HTML files as well as any static files such as CSS
     const app = express();
     app.use(express.static(dir));
     const server = app.listen(finalOptions.serverPort);
@@ -78,8 +97,12 @@ const generatePreviewImages = async (dir, options = {}) => {
         if (finalOptions.removeOriginalFiles) {
             fs.unlinkSync(path.resolve(dir, file));
         }
-        // @TODO: return list of files, object with original and output file, buffer or whatever?
-        return file;
+        return {
+            original: file,
+            output: outputPath,
+            // @TODO: make buffer return conditional?
+            screenshot: buffer,
+        };
     })
     // wait until all promises have completed
     // @TODO: handle rejections gracefully? use allSettled?
@@ -91,5 +114,8 @@ const generatePreviewImages = async (dir, options = {}) => {
     return results;
 }
 
-exports.default = generatePreviewImages;
+// export main function
 exports.generatePreviewImages = generatePreviewImages;
+exports.default = generatePreviewImages;
+// export utility methods
+exports.outputPathReplaceExtension = outputPathReplaceExtension;
