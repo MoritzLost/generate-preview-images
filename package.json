@@ -1,6 +1,6 @@
 {
   "name": "generate-preview-images",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Automatically take screenshots of static HTML pages to use as preview images for social media.",
   "homepage": "https://github.com/MoritzLost/generate-preview-images",
   "bugs": "https://github.com/MoritzLost/generate-preview-images/issues",
