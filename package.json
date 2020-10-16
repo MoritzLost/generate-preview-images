@@ -23,6 +23,9 @@
   "dependencies": {
     "express": "^4.17.1",
     "fast-glob": "^3.2.4",
+    "imagemin": "^7.0.1",
+    "imagemin-jpegtran": "^7.0.0",
+    "imagemin-optipng": "^8.0.0",
     "puppeteer": "^5.3.1"
   }
 }
